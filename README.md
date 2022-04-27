@@ -9,7 +9,7 @@ For running on local:
 - netlify dev
 
 
-1. GET: /media/stream <String> : get media stream src
+1. GET: /media/stream {**String**} : get media stream src
 
 - Query params:
   
@@ -19,7 +19,7 @@ For running on local:
 
 - Example: https://dulcet-sunshine-7c07af.netlify.app/media/stream?id=4Bw105Ck2oI&type=audio
   
-2. POST: /media/search <Array> : search by keyword
+2. POST: /media/search {**Array**} : search by keyword
   
 - Body:
   
