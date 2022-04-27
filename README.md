@@ -26,3 +26,5 @@ For running on local:
   + keyword <string> 
   
   + quantity <number> quantity videos that returned
+  
+- Example: `let {data} = axios.post("https://dulcet-sunshine-7c07af.netlify.app/media/search", {keyword:"Lac troi", quanity: 12})`
