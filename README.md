@@ -30,4 +30,4 @@ For running on local:
   
   + quantity {**Number**} quantity videos that returned
   
-- Example: `let {data} = axios.post("https://dulcet-sunshine-7c07af.netlify.app/media/search", {keyword:"Lac troi", quanity: 12})`
+- Example: `let {data} = await axios.post("https://dulcet-sunshine-7c07af.netlify.app/media/search", {keyword:"Lac troi", quanity: 12})`
