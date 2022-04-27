@@ -1,6 +1,9 @@
 # Royal Media Sever
 
-URL >>> https://dulcet-sunshine-7c07af.netlify.app
+BACK-END: >>> https://dulcet-sunshine-7c07af.netlify.app
+
+FRONT-END: >>> https://rmediavi.web.app/
+
 
 For running on local:
 
