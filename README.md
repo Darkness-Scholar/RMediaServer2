@@ -13,9 +13,9 @@ For running on local:
 
 - Query params:
   
-  + id <string> youtube video id
+  + id {**String**} youtube video id
   
-  + type <string> audio or video
+  + type {**String**} audio or video
 
 - Example: https://dulcet-sunshine-7c07af.netlify.app/media/stream?id=4Bw105Ck2oI&type=audio
   
@@ -23,8 +23,8 @@ For running on local:
   
 - Body:
   
-  + keyword <string> 
+  + keyword {**String**} 
   
-  + quantity <number> quantity videos that returned
+  + quantity {**Number**} quantity videos that returned
   
 - Example: `let {data} = axios.post("https://dulcet-sunshine-7c07af.netlify.app/media/search", {keyword:"Lac troi", quanity: 12})`
