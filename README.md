@@ -1,4 +1,4 @@
-# Royal Media Sever
+# ROYAL MEDIA SERVER
 
 BACK-END: >>> https://dulcet-sunshine-7c07af.netlify.app
 
