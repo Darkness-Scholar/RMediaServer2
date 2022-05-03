@@ -12,6 +12,7 @@ For running on local:
 - netlify dev
 
 
+
 1. GET: /media/stream {**String**} : get media stream src
 
 - Query params:
@@ -21,6 +22,7 @@ For running on local:
   + type {**String**} audio or video
 
 - Example: https://dulcet-sunshine-7c07af.netlify.app/media/stream?id=4Bw105Ck2oI&type=audio
+
   
 2. POST: /media/search {**Array**} : search by keyword
   
@@ -32,6 +34,7 @@ For running on local:
   
 - Example: `let {data} = await axios.post("https://dulcet-sunshine-7c07af.netlify.app/media/search", {keyword:"Lac troi", quanity: 12})`
 
+
 3. GET: /media/info {**Object**} : Get video or playlist infomations by id
 
 - Query params:
@@ -41,6 +44,7 @@ For running on local:
   + type: {**String**} single || playlist
 
 - Example: `let {data} = await axios.get("https://dulcet-sunshine-7c07af.netlify.app/media/info?id=dQw4w9WgXcQ&type=single")`
+
 
 4. GET: /media/tracklist {**Array**} : Get a tracklist (media src list) by youtube playlist id
 
