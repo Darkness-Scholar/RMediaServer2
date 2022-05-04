@@ -3,7 +3,23 @@ import { User, Token } from '../database/main'
 import { ACCESS_TOKEN_LIFECYCLE, REFRESH_TOKEN_LIFECYCLE } from '../database/env'
 import { generateToken, verifyToken, authChecking } from './shield'
 
-const auth = express.Router()
+export const auth = express.Router()
+
+auth.get('/register', async (req, res) => {
+    const { username, password } = req.query
+
+    try {
+        const user = await User.create({ username, password })
+        return res.status(200).json({ 'msg': 'Register success' })
+    } catch (err) {
+        switch (err["code"]) {
+            case 11000:
+                return res.status(400).json({ 'msg': 'Username already exists', err })
+            default:
+                return res.status(500).json({ 'msg': 'Register failed', err })
+        }
+    }
+})
 
 auth.post('/login', async (req, res) => {
     let { username, password } = req.body;
@@ -80,4 +96,3 @@ auth.post('/verify', async (req, res) => {
     }
 })
 
-export default auth

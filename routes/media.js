@@ -82,8 +82,3 @@ media.get("/stream", async (req, res) => {
         res.status(500).json("Not found")
     }
 })
-
-setInterval(() => {
-    axios.get("http://localhost:8888")
-    .then(res => { console.log("Sleeping is blocked", res.data) })
-}, [3600000]);

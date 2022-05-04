@@ -27253,21 +27253,21 @@ var require_utils4 = __commonJS({
       return `${name} option [${option}] is deprecated and will be removed in a later version.`;
     }
     exports2.defaultMsgHandler = defaultMsgHandler;
-    function deprecateOptions(config, fn) {
+    function deprecateOptions(config2, fn) {
       if (process.noDeprecation === true) {
         return fn;
       }
-      const msgHandler = config.msgHandler ? config.msgHandler : defaultMsgHandler;
+      const msgHandler = config2.msgHandler ? config2.msgHandler : defaultMsgHandler;
       const optionsWarned = new Set();
       function deprecated(...args) {
-        const options = args[config.optionsIndex];
+        const options = args[config2.optionsIndex];
         if (!isObject(options) || Object.keys(options).length === 0) {
           return fn.bind(this)(...args);
         }
-        for (const deprecatedOption of config.deprecatedOptions) {
+        for (const deprecatedOption of config2.deprecatedOptions) {
           if (deprecatedOption in options && !optionsWarned.has(deprecatedOption)) {
             optionsWarned.add(deprecatedOption);
-            const msg = msgHandler(config.name, deprecatedOption);
+            const msg = msgHandler(config2.name, deprecatedOption);
             emitWarning(msg);
             if (this && "getLogger" in this) {
               const logger = this.getLogger();
@@ -75452,7 +75452,7 @@ var require_main = __commonJS({
     function _resolveHome(envPath) {
       return envPath[0] === "~" ? path.join(os.homedir(), envPath.slice(1)) : envPath;
     }
-    function config(options) {
+    function config2(options) {
       let dotenvPath = path.resolve(process.cwd(), ".env");
       let encoding = "utf8";
       const debug = Boolean(options && options.debug);
@@ -75492,7 +75492,7 @@ var require_main = __commonJS({
       }
     }
     var DotenvModule = {
-      config,
+      config: config2,
       parse
     };
     module2.exports.config = DotenvModule.config;
@@ -87879,12 +87879,12 @@ var require_AxiosError = __commonJS({
   "node_modules/axios/lib/core/AxiosError.js"(exports2, module2) {
     "use strict";
     var utils = require_utils10();
-    function AxiosError(message, code, config, request, response) {
+    function AxiosError(message, code, config2, request, response) {
       Error.call(this);
       this.message = message;
       this.name = "AxiosError";
       code && (this.code = code);
-      config && (this.config = config);
+      config2 && (this.config = config2);
       request && (this.request = request);
       response && (this.response = response);
     }
@@ -87923,12 +87923,12 @@ var require_AxiosError = __commonJS({
     });
     Object.defineProperties(AxiosError, descriptors);
     Object.defineProperty(prototype, "isAxiosError", { value: true });
-    AxiosError.from = function(error, code, config, request, response, customProps) {
+    AxiosError.from = function(error, code, config2, request, response, customProps) {
       var axiosError = Object.create(prototype);
       utils.toFlatObject(error, axiosError, function filter(obj) {
         return obj !== Error.prototype;
       });
-      AxiosError.call(axiosError, error.message, code, config, request, response);
+      AxiosError.call(axiosError, error.message, code, config2, request, response);
       axiosError.name = error.name;
       customProps && Object.assign(axiosError, customProps);
       return axiosError;
@@ -88235,32 +88235,32 @@ var require_xhr = __commonJS({
     var AxiosError = require_AxiosError();
     var CanceledError = require_CanceledError();
     var parseProtocol = require_parseProtocol();
-    module2.exports = function xhrAdapter(config) {
+    module2.exports = function xhrAdapter(config2) {
       return new Promise(function dispatchXhrRequest(resolve, reject) {
-        var requestData = config.data;
-        var requestHeaders = config.headers;
-        var responseType = config.responseType;
+        var requestData = config2.data;
+        var requestHeaders = config2.headers;
+        var responseType = config2.responseType;
         var onCanceled;
         function done() {
-          if (config.cancelToken) {
-            config.cancelToken.unsubscribe(onCanceled);
+          if (config2.cancelToken) {
+            config2.cancelToken.unsubscribe(onCanceled);
           }
-          if (config.signal) {
-            config.signal.removeEventListener("abort", onCanceled);
+          if (config2.signal) {
+            config2.signal.removeEventListener("abort", onCanceled);
           }
         }
         if (utils.isFormData(requestData) && utils.isStandardBrowserEnv()) {
           delete requestHeaders["Content-Type"];
         }
         var request = new XMLHttpRequest();
-        if (config.auth) {
-          var username = config.auth.username || "";
-          var password = config.auth.password ? unescape(encodeURIComponent(config.auth.password)) : "";
+        if (config2.auth) {
+          var username = config2.auth.username || "";
+          var password = config2.auth.password ? unescape(encodeURIComponent(config2.auth.password)) : "";
           requestHeaders.Authorization = "Basic " + btoa(username + ":" + password);
         }
-        var fullPath = buildFullPath(config.baseURL, config.url);
-        request.open(config.method.toUpperCase(), buildURL(fullPath, config.params, config.paramsSerializer), true);
-        request.timeout = config.timeout;
+        var fullPath = buildFullPath(config2.baseURL, config2.url);
+        request.open(config2.method.toUpperCase(), buildURL(fullPath, config2.params, config2.paramsSerializer), true);
+        request.timeout = config2.timeout;
         function onloadend() {
           if (!request) {
             return;
@@ -88272,7 +88272,7 @@ var require_xhr = __commonJS({
             status: request.status,
             statusText: request.statusText,
             headers: responseHeaders,
-            config,
+            config: config2,
             request
           };
           settle(function _resolve(value) {
@@ -88301,26 +88301,26 @@ var require_xhr = __commonJS({
           if (!request) {
             return;
           }
-          reject(new AxiosError("Request aborted", AxiosError.ECONNABORTED, config, request));
+          reject(new AxiosError("Request aborted", AxiosError.ECONNABORTED, config2, request));
           request = null;
         };
         request.onerror = function handleError() {
-          reject(new AxiosError("Network Error", AxiosError.ERR_NETWORK, config, request, request));
+          reject(new AxiosError("Network Error", AxiosError.ERR_NETWORK, config2, request, request));
           request = null;
         };
         request.ontimeout = function handleTimeout() {
-          var timeoutErrorMessage = config.timeout ? "timeout of " + config.timeout + "ms exceeded" : "timeout exceeded";
-          var transitional = config.transitional || transitionalDefaults;
-          if (config.timeoutErrorMessage) {
-            timeoutErrorMessage = config.timeoutErrorMessage;
+          var timeoutErrorMessage = config2.timeout ? "timeout of " + config2.timeout + "ms exceeded" : "timeout exceeded";
+          var transitional = config2.transitional || transitionalDefaults;
+          if (config2.timeoutErrorMessage) {
+            timeoutErrorMessage = config2.timeoutErrorMessage;
           }
-          reject(new AxiosError(timeoutErrorMessage, transitional.clarifyTimeoutError ? AxiosError.ETIMEDOUT : AxiosError.ECONNABORTED, config, request));
+          reject(new AxiosError(timeoutErrorMessage, transitional.clarifyTimeoutError ? AxiosError.ETIMEDOUT : AxiosError.ECONNABORTED, config2, request));
           request = null;
         };
         if (utils.isStandardBrowserEnv()) {
-          var xsrfValue = (config.withCredentials || isURLSameOrigin(fullPath)) && config.xsrfCookieName ? cookies.read(config.xsrfCookieName) : void 0;
+          var xsrfValue = (config2.withCredentials || isURLSameOrigin(fullPath)) && config2.xsrfCookieName ? cookies.read(config2.xsrfCookieName) : void 0;
           if (xsrfValue) {
-            requestHeaders[config.xsrfHeaderName] = xsrfValue;
+            requestHeaders[config2.xsrfHeaderName] = xsrfValue;
           }
         }
         if ("setRequestHeader" in request) {
@@ -88332,19 +88332,19 @@ var require_xhr = __commonJS({
             }
           });
         }
-        if (!utils.isUndefined(config.withCredentials)) {
-          request.withCredentials = !!config.withCredentials;
+        if (!utils.isUndefined(config2.withCredentials)) {
+          request.withCredentials = !!config2.withCredentials;
         }
         if (responseType && responseType !== "json") {
-          request.responseType = config.responseType;
+          request.responseType = config2.responseType;
         }
-        if (typeof config.onDownloadProgress === "function") {
-          request.addEventListener("progress", config.onDownloadProgress);
+        if (typeof config2.onDownloadProgress === "function") {
+          request.addEventListener("progress", config2.onDownloadProgress);
         }
-        if (typeof config.onUploadProgress === "function" && request.upload) {
-          request.upload.addEventListener("progress", config.onUploadProgress);
+        if (typeof config2.onUploadProgress === "function" && request.upload) {
+          request.upload.addEventListener("progress", config2.onUploadProgress);
         }
-        if (config.cancelToken || config.signal) {
+        if (config2.cancelToken || config2.signal) {
           onCanceled = function(cancel) {
             if (!request) {
               return;
@@ -88353,9 +88353,9 @@ var require_xhr = __commonJS({
             request.abort();
             request = null;
           };
-          config.cancelToken && config.cancelToken.subscribe(onCanceled);
-          if (config.signal) {
-            config.signal.aborted ? onCanceled() : config.signal.addEventListener("abort", onCanceled);
+          config2.cancelToken && config2.cancelToken.subscribe(onCanceled);
+          if (config2.signal) {
+            config2.signal.aborted ? onCanceled() : config2.signal.addEventListener("abort", onCanceled);
           }
         }
         if (!requestData) {
@@ -88363,7 +88363,7 @@ var require_xhr = __commonJS({
         }
         var protocol = parseProtocol(fullPath);
         if (protocol && ["http", "https", "file"].indexOf(protocol) === -1) {
-          reject(new AxiosError("Unsupported protocol " + protocol + ":", AxiosError.ERR_BAD_REQUEST, config));
+          reject(new AxiosError("Unsupported protocol " + protocol + ":", AxiosError.ERR_BAD_REQUEST, config2));
           return;
         }
         request.send(requestData);
@@ -88826,15 +88826,15 @@ var require_http = __commonJS({
         setProxy(redirection, proxy, redirection.href);
       };
     }
-    module2.exports = function httpAdapter(config) {
+    module2.exports = function httpAdapter(config2) {
       return new Promise(function dispatchHttpRequest(resolvePromise, rejectPromise) {
         var onCanceled;
         function done() {
-          if (config.cancelToken) {
-            config.cancelToken.unsubscribe(onCanceled);
+          if (config2.cancelToken) {
+            config2.cancelToken.unsubscribe(onCanceled);
           }
-          if (config.signal) {
-            config.signal.removeEventListener("abort", onCanceled);
+          if (config2.signal) {
+            config2.signal.removeEventListener("abort", onCanceled);
           }
         }
         var resolve = function resolve2(value) {
@@ -88847,8 +88847,8 @@ var require_http = __commonJS({
           rejected = true;
           rejectPromise(value);
         };
-        var data = config.data;
-        var headers = config.headers;
+        var data = config2.data;
+        var headers = config2.headers;
         var headerNames = {};
         Object.keys(headers).forEach(function storeLowerName(name) {
           headerNames[name.toLowerCase()] = name;
@@ -88869,26 +88869,26 @@ var require_http = __commonJS({
           } else if (utils.isString(data)) {
             data = Buffer.from(data, "utf-8");
           } else {
-            return reject(new AxiosError("Data after transformation must be a string, an ArrayBuffer, a Buffer, or a Stream", AxiosError.ERR_BAD_REQUEST, config));
+            return reject(new AxiosError("Data after transformation must be a string, an ArrayBuffer, a Buffer, or a Stream", AxiosError.ERR_BAD_REQUEST, config2));
           }
-          if (config.maxBodyLength > -1 && data.length > config.maxBodyLength) {
-            return reject(new AxiosError("Request body larger than maxBodyLength limit", AxiosError.ERR_BAD_REQUEST, config));
+          if (config2.maxBodyLength > -1 && data.length > config2.maxBodyLength) {
+            return reject(new AxiosError("Request body larger than maxBodyLength limit", AxiosError.ERR_BAD_REQUEST, config2));
           }
           if (!headerNames["content-length"]) {
             headers["Content-Length"] = data.length;
           }
         }
         var auth2 = void 0;
-        if (config.auth) {
-          var username = config.auth.username || "";
-          var password = config.auth.password || "";
+        if (config2.auth) {
+          var username = config2.auth.username || "";
+          var password = config2.auth.password || "";
           auth2 = username + ":" + password;
         }
-        var fullPath = buildFullPath(config.baseURL, config.url);
+        var fullPath = buildFullPath(config2.baseURL, config2.url);
         var parsed = url.parse(fullPath);
         var protocol = parsed.protocol || supportedProtocols[0];
         if (supportedProtocols.indexOf(protocol) === -1) {
-          return reject(new AxiosError("Unsupported protocol " + protocol, AxiosError.ERR_BAD_REQUEST, config));
+          return reject(new AxiosError("Unsupported protocol " + protocol, AxiosError.ERR_BAD_REQUEST, config2));
         }
         if (!auth2 && parsed.auth) {
           var urlAuth = parsed.auth.split(":");
@@ -88900,31 +88900,31 @@ var require_http = __commonJS({
           delete headers[headerNames.authorization];
         }
         var isHttpsRequest = isHttps.test(protocol);
-        var agent = isHttpsRequest ? config.httpsAgent : config.httpAgent;
+        var agent = isHttpsRequest ? config2.httpsAgent : config2.httpAgent;
         try {
-          buildURL(parsed.path, config.params, config.paramsSerializer).replace(/^\?/, "");
+          buildURL(parsed.path, config2.params, config2.paramsSerializer).replace(/^\?/, "");
         } catch (err) {
           var customErr = new Error(err.message);
-          customErr.config = config;
-          customErr.url = config.url;
+          customErr.config = config2;
+          customErr.url = config2.url;
           customErr.exists = true;
           reject(customErr);
         }
         var options = {
-          path: buildURL(parsed.path, config.params, config.paramsSerializer).replace(/^\?/, ""),
-          method: config.method.toUpperCase(),
+          path: buildURL(parsed.path, config2.params, config2.paramsSerializer).replace(/^\?/, ""),
+          method: config2.method.toUpperCase(),
           headers,
           agent,
-          agents: { http: config.httpAgent, https: config.httpsAgent },
+          agents: { http: config2.httpAgent, https: config2.httpsAgent },
           auth: auth2
         };
-        if (config.socketPath) {
-          options.socketPath = config.socketPath;
+        if (config2.socketPath) {
+          options.socketPath = config2.socketPath;
         } else {
           options.hostname = parsed.hostname;
           options.port = parsed.port;
         }
-        var proxy = config.proxy;
+        var proxy = config2.proxy;
         if (!proxy && proxy !== false) {
           var proxyEnv = protocol.slice(0, -1) + "_proxy";
           var proxyUrl = process.env[proxyEnv] || process.env[proxyEnv.toUpperCase()];
@@ -88971,31 +88971,31 @@ var require_http = __commonJS({
         }
         var transport;
         var isHttpsProxy = isHttpsRequest && (proxy ? isHttps.test(proxy.protocol) : true);
-        if (config.transport) {
-          transport = config.transport;
-        } else if (config.maxRedirects === 0) {
+        if (config2.transport) {
+          transport = config2.transport;
+        } else if (config2.maxRedirects === 0) {
           transport = isHttpsProxy ? https : http;
         } else {
-          if (config.maxRedirects) {
-            options.maxRedirects = config.maxRedirects;
+          if (config2.maxRedirects) {
+            options.maxRedirects = config2.maxRedirects;
           }
-          if (config.beforeRedirect) {
-            options.beforeRedirect = config.beforeRedirect;
+          if (config2.beforeRedirect) {
+            options.beforeRedirect = config2.beforeRedirect;
           }
           transport = isHttpsProxy ? httpsFollow : httpFollow;
         }
-        if (config.maxBodyLength > -1) {
-          options.maxBodyLength = config.maxBodyLength;
+        if (config2.maxBodyLength > -1) {
+          options.maxBodyLength = config2.maxBodyLength;
         }
-        if (config.insecureHTTPParser) {
-          options.insecureHTTPParser = config.insecureHTTPParser;
+        if (config2.insecureHTTPParser) {
+          options.insecureHTTPParser = config2.insecureHTTPParser;
         }
         var req = transport.request(options, function handleResponse(res) {
           if (req.aborted)
             return;
           var stream = res;
           var lastRequest = res.req || req;
-          if (res.statusCode !== 204 && lastRequest.method !== "HEAD" && config.decompress !== false) {
+          if (res.statusCode !== 204 && lastRequest.method !== "HEAD" && config2.decompress !== false) {
             switch (res.headers["content-encoding"]) {
               case "gzip":
               case "compress":
@@ -89009,10 +89009,10 @@ var require_http = __commonJS({
             status: res.statusCode,
             statusText: res.statusMessage,
             headers: res.headers,
-            config,
+            config: config2,
             request: lastRequest
           };
-          if (config.responseType === "stream") {
+          if (config2.responseType === "stream") {
             response.data = stream;
             settle(resolve, reject, response);
           } else {
@@ -89021,10 +89021,10 @@ var require_http = __commonJS({
             stream.on("data", function handleStreamData(chunk) {
               responseBuffer.push(chunk);
               totalResponseBytes += chunk.length;
-              if (config.maxContentLength > -1 && totalResponseBytes > config.maxContentLength) {
+              if (config2.maxContentLength > -1 && totalResponseBytes > config2.maxContentLength) {
                 rejected = true;
                 stream.destroy();
-                reject(new AxiosError("maxContentLength size of " + config.maxContentLength + " exceeded", AxiosError.ERR_BAD_RESPONSE, config, lastRequest));
+                reject(new AxiosError("maxContentLength size of " + config2.maxContentLength + " exceeded", AxiosError.ERR_BAD_RESPONSE, config2, lastRequest));
               }
             });
             stream.on("aborted", function handlerStreamAborted() {
@@ -89032,63 +89032,63 @@ var require_http = __commonJS({
                 return;
               }
               stream.destroy();
-              reject(new AxiosError("maxContentLength size of " + config.maxContentLength + " exceeded", AxiosError.ERR_BAD_RESPONSE, config, lastRequest));
+              reject(new AxiosError("maxContentLength size of " + config2.maxContentLength + " exceeded", AxiosError.ERR_BAD_RESPONSE, config2, lastRequest));
             });
             stream.on("error", function handleStreamError(err) {
               if (req.aborted)
                 return;
-              reject(AxiosError.from(err, null, config, lastRequest));
+              reject(AxiosError.from(err, null, config2, lastRequest));
             });
             stream.on("end", function handleStreamEnd() {
               try {
                 var responseData = responseBuffer.length === 1 ? responseBuffer[0] : Buffer.concat(responseBuffer);
-                if (config.responseType !== "arraybuffer") {
-                  responseData = responseData.toString(config.responseEncoding);
-                  if (!config.responseEncoding || config.responseEncoding === "utf8") {
+                if (config2.responseType !== "arraybuffer") {
+                  responseData = responseData.toString(config2.responseEncoding);
+                  if (!config2.responseEncoding || config2.responseEncoding === "utf8") {
                     responseData = utils.stripBOM(responseData);
                   }
                 }
                 response.data = responseData;
               } catch (err) {
-                reject(AxiosError.from(err, null, config, response.request, response));
+                reject(AxiosError.from(err, null, config2, response.request, response));
               }
               settle(resolve, reject, response);
             });
           }
         });
         req.on("error", function handleRequestError(err) {
-          reject(AxiosError.from(err, null, config, req));
+          reject(AxiosError.from(err, null, config2, req));
         });
         req.on("socket", function handleRequestSocket(socket) {
           socket.setKeepAlive(true, 1e3 * 60);
         });
-        if (config.timeout) {
-          var timeout = parseInt(config.timeout, 10);
+        if (config2.timeout) {
+          var timeout = parseInt(config2.timeout, 10);
           if (isNaN(timeout)) {
-            reject(new AxiosError("error trying to parse `config.timeout` to int", AxiosError.ERR_BAD_OPTION_VALUE, config, req));
+            reject(new AxiosError("error trying to parse `config.timeout` to int", AxiosError.ERR_BAD_OPTION_VALUE, config2, req));
             return;
           }
           req.setTimeout(timeout, function handleRequestTimeout() {
             req.abort();
-            var transitional = config.transitional || transitionalDefaults;
-            reject(new AxiosError("timeout of " + timeout + "ms exceeded", transitional.clarifyTimeoutError ? AxiosError.ETIMEDOUT : AxiosError.ECONNABORTED, config, req));
+            var transitional = config2.transitional || transitionalDefaults;
+            reject(new AxiosError("timeout of " + timeout + "ms exceeded", transitional.clarifyTimeoutError ? AxiosError.ETIMEDOUT : AxiosError.ECONNABORTED, config2, req));
           });
         }
-        if (config.cancelToken || config.signal) {
+        if (config2.cancelToken || config2.signal) {
           onCanceled = function(cancel) {
             if (req.aborted)
               return;
             req.abort();
             reject(!cancel || cancel && cancel.type ? new CanceledError() : cancel);
           };
-          config.cancelToken && config.cancelToken.subscribe(onCanceled);
-          if (config.signal) {
-            config.signal.aborted ? onCanceled() : config.signal.addEventListener("abort", onCanceled);
+          config2.cancelToken && config2.cancelToken.subscribe(onCanceled);
+          if (config2.signal) {
+            config2.signal.aborted ? onCanceled() : config2.signal.addEventListener("abort", onCanceled);
           }
         }
         if (utils.isStream(data)) {
           data.on("error", function handleStreamError(err) {
-            reject(AxiosError.from(err, config, null, req));
+            reject(AxiosError.from(err, config2, null, req));
           }).pipe(req);
         } else {
           req.end(data);
@@ -90049,32 +90049,32 @@ var require_dispatchRequest = __commonJS({
     var isCancel = require_isCancel();
     var defaults = require_defaults();
     var CanceledError = require_CanceledError();
-    function throwIfCancellationRequested(config) {
-      if (config.cancelToken) {
-        config.cancelToken.throwIfRequested();
+    function throwIfCancellationRequested(config2) {
+      if (config2.cancelToken) {
+        config2.cancelToken.throwIfRequested();
       }
-      if (config.signal && config.signal.aborted) {
+      if (config2.signal && config2.signal.aborted) {
         throw new CanceledError();
       }
     }
-    module2.exports = function dispatchRequest(config) {
-      throwIfCancellationRequested(config);
-      config.headers = config.headers || {};
-      config.data = transformData.call(config, config.data, config.headers, config.transformRequest);
-      config.headers = utils.merge(config.headers.common || {}, config.headers[config.method] || {}, config.headers);
+    module2.exports = function dispatchRequest(config2) {
+      throwIfCancellationRequested(config2);
+      config2.headers = config2.headers || {};
+      config2.data = transformData.call(config2, config2.data, config2.headers, config2.transformRequest);
+      config2.headers = utils.merge(config2.headers.common || {}, config2.headers[config2.method] || {}, config2.headers);
       utils.forEach(["delete", "get", "head", "post", "put", "patch", "common"], function cleanHeaderConfig(method) {
-        delete config.headers[method];
+        delete config2.headers[method];
       });
-      var adapter = config.adapter || defaults.adapter;
-      return adapter(config).then(function onAdapterResolution(response) {
-        throwIfCancellationRequested(config);
-        response.data = transformData.call(config, response.data, response.headers, config.transformResponse);
+      var adapter = config2.adapter || defaults.adapter;
+      return adapter(config2).then(function onAdapterResolution(response) {
+        throwIfCancellationRequested(config2);
+        response.data = transformData.call(config2, response.data, response.headers, config2.transformResponse);
         return response;
       }, function onAdapterRejection(reason) {
         if (!isCancel(reason)) {
-          throwIfCancellationRequested(config);
+          throwIfCancellationRequested(config2);
           if (reason && reason.response) {
-            reason.response.data = transformData.call(config, reason.response.data, reason.response.headers, config.transformResponse);
+            reason.response.data = transformData.call(config2, reason.response.data, reason.response.headers, config2.transformResponse);
           }
         }
         return Promise.reject(reason);
@@ -90090,7 +90090,7 @@ var require_mergeConfig = __commonJS({
     var utils = require_utils10();
     module2.exports = function mergeConfig(config1, config2) {
       config2 = config2 || {};
-      var config = {};
+      var config3 = {};
       function getMergedValue(target, source) {
         if (utils.isPlainObject(target) && utils.isPlainObject(source)) {
           return utils.merge(target, source);
@@ -90159,9 +90159,9 @@ var require_mergeConfig = __commonJS({
       utils.forEach(Object.keys(config1).concat(Object.keys(config2)), function computeConfigValue(prop) {
         var merge = mergeMap[prop] || mergeDeepProperties;
         var configValue = merge(prop);
-        utils.isUndefined(configValue) && merge !== mergeDirectKeys || (config[prop] = configValue);
+        utils.isUndefined(configValue) && merge !== mergeDirectKeys || (config3[prop] = configValue);
       });
-      return config;
+      return config3;
     };
   }
 });
@@ -90242,22 +90242,22 @@ var require_Axios = __commonJS({
         response: new InterceptorManager()
       };
     }
-    Axios.prototype.request = function request(configOrUrl, config) {
+    Axios.prototype.request = function request(configOrUrl, config2) {
       if (typeof configOrUrl === "string") {
-        config = config || {};
-        config.url = configOrUrl;
+        config2 = config2 || {};
+        config2.url = configOrUrl;
       } else {
-        config = configOrUrl || {};
+        config2 = configOrUrl || {};
       }
-      config = mergeConfig(this.defaults, config);
-      if (config.method) {
-        config.method = config.method.toLowerCase();
+      config2 = mergeConfig(this.defaults, config2);
+      if (config2.method) {
+        config2.method = config2.method.toLowerCase();
       } else if (this.defaults.method) {
-        config.method = this.defaults.method.toLowerCase();
+        config2.method = this.defaults.method.toLowerCase();
       } else {
-        config.method = "get";
+        config2.method = "get";
       }
-      var transitional = config.transitional;
+      var transitional = config2.transitional;
       if (transitional !== void 0) {
         validator.assertOptions(transitional, {
           silentJSONParsing: validators.transitional(validators.boolean),
@@ -90268,7 +90268,7 @@ var require_Axios = __commonJS({
       var requestInterceptorChain = [];
       var synchronousRequestInterceptors = true;
       this.interceptors.request.forEach(function unshiftRequestInterceptors(interceptor) {
-        if (typeof interceptor.runWhen === "function" && interceptor.runWhen(config) === false) {
+        if (typeof interceptor.runWhen === "function" && interceptor.runWhen(config2) === false) {
           return;
         }
         synchronousRequestInterceptors = synchronousRequestInterceptors && interceptor.synchronous;
@@ -90283,13 +90283,13 @@ var require_Axios = __commonJS({
         var chain = [dispatchRequest, void 0];
         Array.prototype.unshift.apply(chain, requestInterceptorChain);
         chain = chain.concat(responseInterceptorChain);
-        promise = Promise.resolve(config);
+        promise = Promise.resolve(config2);
         while (chain.length) {
           promise = promise.then(chain.shift(), chain.shift());
         }
         return promise;
       }
-      var newConfig = config;
+      var newConfig = config2;
       while (requestInterceptorChain.length) {
         var onFulfilled = requestInterceptorChain.shift();
         var onRejected = requestInterceptorChain.shift();
@@ -90310,24 +90310,24 @@ var require_Axios = __commonJS({
       }
       return promise;
     };
-    Axios.prototype.getUri = function getUri(config) {
-      config = mergeConfig(this.defaults, config);
-      var fullPath = buildFullPath(config.baseURL, config.url);
-      return buildURL(fullPath, config.params, config.paramsSerializer);
+    Axios.prototype.getUri = function getUri(config2) {
+      config2 = mergeConfig(this.defaults, config2);
+      var fullPath = buildFullPath(config2.baseURL, config2.url);
+      return buildURL(fullPath, config2.params, config2.paramsSerializer);
     };
     utils.forEach(["delete", "get", "head", "options"], function forEachMethodNoData(method) {
-      Axios.prototype[method] = function(url, config) {
-        return this.request(mergeConfig(config || {}, {
+      Axios.prototype[method] = function(url, config2) {
+        return this.request(mergeConfig(config2 || {}, {
           method,
           url,
-          data: (config || {}).data
+          data: (config2 || {}).data
         }));
       };
     });
     utils.forEach(["post", "put", "patch"], function forEachMethodWithData(method) {
       function generateHTTPMethod(isForm) {
-        return function httpMethod(url, data, config) {
-          return this.request(mergeConfig(config || {}, {
+        return function httpMethod(url, data, config2) {
+          return this.request(mergeConfig(config2 || {}, {
             method,
             headers: isForm ? {
               "Content-Type": "multipart/form-data"
@@ -90468,22 +90468,22 @@ var require_axios = __commonJS({
       };
       return instance;
     }
-    var axios2 = createInstance(defaults);
-    axios2.Axios = Axios;
-    axios2.CanceledError = require_CanceledError();
-    axios2.CancelToken = require_CancelToken();
-    axios2.isCancel = require_isCancel();
-    axios2.VERSION = require_data().version;
-    axios2.toFormData = require_toFormData();
-    axios2.AxiosError = require_AxiosError();
-    axios2.Cancel = axios2.CanceledError;
-    axios2.all = function all(promises) {
+    var axios3 = createInstance(defaults);
+    axios3.Axios = Axios;
+    axios3.CanceledError = require_CanceledError();
+    axios3.CancelToken = require_CancelToken();
+    axios3.isCancel = require_isCancel();
+    axios3.VERSION = require_data().version;
+    axios3.toFormData = require_toFormData();
+    axios3.AxiosError = require_AxiosError();
+    axios3.Cancel = axios3.CanceledError;
+    axios3.all = function all(promises) {
       return Promise.all(promises);
     };
-    axios2.spread = require_spread();
-    axios2.isAxiosError = require_isAxiosError();
-    module2.exports = axios2;
-    module2.exports.default = axios2;
+    axios3.spread = require_spread();
+    axios3.isAxiosError = require_isAxiosError();
+    module2.exports = axios3;
+    module2.exports.default = axios3;
   }
 });
 
@@ -90495,7 +90495,7 @@ var require_axios2 = __commonJS({
 });
 
 // functions/api.js
-var import_express4 = __toModule(require_express2());
+var import_express5 = __toModule(require_express2());
 var import_body_parser = __toModule(require_body_parser());
 var import_cors = __toModule(require_lib3());
 var import_serverless_http = __toModule(require_serverless_http());
@@ -90512,24 +90512,14 @@ import_mongoose.default.connect("mongodb+srv://tungxm123:123qwe@cluster0.vtigv.m
   useUnifiedTopology: true
 });
 var Schema = import_mongoose.default.Schema;
-var CardSchema = new Schema({
-  title: { type: String, required: true },
-  value: { type: Number, required: true },
-  price: { type: Number, required: true },
-  code: { type: String, required: true, unique: true },
-  seri: { type: String, required: true, unique: true }
-}, { timestamps: true, collection: "cards" });
 var UserSchema = new Schema({
   username: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  amount: { type: Number, required: true, default: 0 }
+  password: { type: String, required: true }
 }, { timestamps: true, collection: "users" });
 var TokenSchema = new Schema({
   accessToken: { type: String, required: true },
   refreshToken: { type: String, required: true }
 }, { timestamps: true, collection: "tokens" });
-var Card = import_mongoose.default.model("cards", CardSchema);
 var User = import_mongoose.default.model("users", UserSchema);
 var Token = import_mongoose.default.model("tokens", TokenSchema);
 
@@ -90545,8 +90535,7 @@ var generateToken = (user2, tokenLife) => {
   return new Promise((resolve, reject) => {
     const userData = {
       _id: user2._id,
-      name: user2.username,
-      email: user2.email
+      name: user2.username
     };
     import_jsonwebtoken.default.sign({ data: userData }, SECRET, { algorithm: "HS256", expiresIn: tokenLife }, (error, token) => {
       if (error) {
@@ -90569,6 +90558,20 @@ var verifyToken = (token) => {
 
 // routes/auth.js
 var auth = import_express.default.Router();
+auth.get("/register", async (req, res) => {
+  const { username, password } = req.query;
+  try {
+    const user2 = await User.create({ username, password });
+    return res.status(200).json({ "msg": "Register success" });
+  } catch (err) {
+    switch (err["code"]) {
+      case 11e3:
+        return res.status(400).json({ "msg": "Username already exists", err });
+      default:
+        return res.status(500).json({ "msg": "Register failed", err });
+    }
+  }
+});
 auth.post("/login", async (req, res) => {
   let { username, password } = req.body;
   try {
@@ -90612,7 +90615,6 @@ auth.post("/verify", async (req, res) => {
     res.status(500).json(err);
   }
 });
-var auth_default = auth;
 
 // routes/user.js
 var import_express2 = __toModule(require_express2());
@@ -90623,7 +90625,6 @@ user.get("/", (req, res) => {
 user.get("/:id", (req, res) => {
   res.json({ method: "GET A USER", user: req.params.id });
 });
-var user_default = user;
 
 // routes/media.js
 var import_express3 = __toModule(require_express2());
@@ -90695,15 +90696,52 @@ media.get("/stream", async (req, res) => {
     res.status(500).json("Not found");
   }
 });
-setInterval(() => {
-  import_axios.default.get("http://localhost:8888").then((res) => {
-    console.log("Sleeping is blocked", res.data);
-  });
-}, [36e5]);
+
+// routes/film.js
+var import_axios2 = __toModule(require_axios2());
+var import_express4 = __toModule(require_express2());
+var film = import_express4.default.Router();
+var config = {
+  method: "get",
+  url: "https://ga-mobile-api.loklok.tv/cms/app/homePage/getHome?page=0",
+  headers: {
+    "lang": "en",
+    "versioncode": "11",
+    "clienttype": "ios_jike_default"
+  }
+};
+film.get("/homepage", async (req, res) => {
+  let page = req.query.page ? req.query.page : 0;
+  try {
+    let result = await import_axios2.default.get(`https://ga-mobile-api.loklok.tv/cms/app/homePage/getHome?page=${page}`, { headers: config.headers });
+    res.status(200).json(result.data);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+film.get("/detail", async (req, res) => {
+  let { id, category } = req.query;
+  if (category == 0) {
+    try {
+      let result = await import_axios2.default.get(`https://ga-mobile-api.loklok.tv/cms/app/movieDrama/get?id=${id}&category=0`, { headers: config.headers });
+      res.status(200).json(result.data);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  }
+  if (category == 1) {
+    try {
+      let result = await import_axios2.default.get(`https://ga-mobile-api.loklok.tv/cms/app/movieDrama/get?id=${id}&category=1`, { headers: config.headers });
+      res.status(200).json(result.data);
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  }
+});
 
 // functions/api.js
-var app = (0, import_express4.default)();
-var main = import_express4.default.Router();
+var app = (0, import_express5.default)();
+var main = import_express5.default.Router();
 app.use(import_body_parser.default.urlencoded({ extended: false }));
 app.use(import_body_parser.default.json());
 app.use((0, import_cors.default)());
@@ -90711,9 +90749,10 @@ main.get("/", (req, res) => {
   res.json({ message: "Hello World!" });
 });
 app.use("/", main);
-app.use("/auth", auth_default);
-app.use("/user", user_default);
+app.use("/auth", auth);
+app.use("/user", user);
 app.use("/media", media);
+app.use("/film", film);
 module.exports.handler = (0, import_serverless_http.default)(app);
 /*
 object-assign

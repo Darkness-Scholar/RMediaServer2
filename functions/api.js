@@ -2,9 +2,10 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import cors from 'cors'
 import serverless from 'serverless-http'
-import auth from "../routes/auth"
-import user from "../routes/user"
+import { auth } from "../routes/auth"
+import { user } from "../routes/user"
 import { media } from "../routes/media"
+import { film } from "../routes/film"
 
 const app = express()
 const main = express.Router()
@@ -21,5 +22,6 @@ app.use("/", main)
 app.use("/auth", auth)
 app.use("/user", user)
 app.use('/media', media)
+app.use('/film', film)
 
 module.exports.handler = serverless(app)

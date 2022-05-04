@@ -1,5 +1,5 @@
 import express from 'express'
-const user = express.Router()
+export const user = express.Router()
 
 user.get('/', (req, res) => {
     res.json({ method: 'GET ALL USER', user: [] })
@@ -10,4 +10,4 @@ user.get('/:id', (req, res) => {
 })
 
 
-export default user
+
