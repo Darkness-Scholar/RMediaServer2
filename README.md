@@ -21,13 +21,8 @@ For running on local:
   
   + type {**String**} audio or video
 
-<<<<<<< HEAD
-- Example: `let {data} = axios.get("https://dulcet-sunshine-7c07af.netlify.app/media/stream?id=4Bw105Ck2oI&type=audio")`
-=======
-- Example: https://dulcet-sunshine-7c07af.netlify.app/media/stream?id=4Bw105Ck2oI&type=audio
->>>>>>> 134a1544e254aea4befd290a587b736286b8ca56
+- Example: `let {data} = await axios.get("https://dulcet-sunshine-7c07af.netlify.app/media/stream?id=4Bw105Ck2oI&type=audio")`
 
-  
 2. POST: /media/search {**Array**} : search by keyword
   
 - Body:
@@ -56,8 +51,4 @@ For running on local:
 
   + id {**String**} youtube playlist id
 
-<<<<<<< HEAD
 - Example: `let {data} = await axios.get("https://dulcet-sunshine-7c07af.netlify.app/media/tracklist?id=YOUR_PLAYLIST_ID")`
-=======
-- Example: `let {data} = await axios.get("https://dulcet-sunshine-7c07af.netlify.app/media/tracklist?id=YOUR_PLAYLIST_ID")`
->>>>>>> 134a1544e254aea4befd290a587b736286b8ca56

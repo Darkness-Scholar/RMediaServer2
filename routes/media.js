@@ -2,7 +2,6 @@ import express from 'express'
 import ytdl from 'ytdl-core'
 import fs from 'fs'
 import yts from 'yt-search'
-import axios from 'axios'
 export const media = express.Router()
 
 media.get("/", async (req, res) => {
@@ -66,7 +65,7 @@ media.get("/tracklist", async (req, res) => {
 /** @method get : nhận id và type, trả về 1 media stream src */
 media.get("/stream", async (req, res) => {
     let { id, type } = req.query // example: localhost:8888/api/stream?id=N-MeunQr8gk&type=audio
-    console.log(`Get media stream url: ${id}, type: ${type}`)
+    console.log(`Get media stream src :: video ID: ${id}, type: ${type}`)
     try {
         if (type === "audio") {
             let { formats } = await ytdl.getInfo(id)

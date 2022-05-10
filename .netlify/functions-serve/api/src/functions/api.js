@@ -20535,6 +20535,384 @@ var require_express2 = __commonJS({
   }
 });
 
+// node_modules/compression/node_modules/safe-buffer/index.js
+var require_safe_buffer2 = __commonJS({
+  "node_modules/compression/node_modules/safe-buffer/index.js"(exports2, module2) {
+    var buffer = require("buffer");
+    var Buffer2 = buffer.Buffer;
+    function copyProps(src, dst) {
+      for (var key in src) {
+        dst[key] = src[key];
+      }
+    }
+    if (Buffer2.from && Buffer2.alloc && Buffer2.allocUnsafe && Buffer2.allocUnsafeSlow) {
+      module2.exports = buffer;
+    } else {
+      copyProps(buffer, exports2);
+      exports2.Buffer = SafeBuffer;
+    }
+    function SafeBuffer(arg, encodingOrOffset, length) {
+      return Buffer2(arg, encodingOrOffset, length);
+    }
+    copyProps(Buffer2, SafeBuffer);
+    SafeBuffer.from = function(arg, encodingOrOffset, length) {
+      if (typeof arg === "number") {
+        throw new TypeError("Argument must not be a number");
+      }
+      return Buffer2(arg, encodingOrOffset, length);
+    };
+    SafeBuffer.alloc = function(size, fill, encoding) {
+      if (typeof size !== "number") {
+        throw new TypeError("Argument must be a number");
+      }
+      var buf = Buffer2(size);
+      if (fill !== void 0) {
+        if (typeof encoding === "string") {
+          buf.fill(fill, encoding);
+        } else {
+          buf.fill(fill);
+        }
+      } else {
+        buf.fill(0);
+      }
+      return buf;
+    };
+    SafeBuffer.allocUnsafe = function(size) {
+      if (typeof size !== "number") {
+        throw new TypeError("Argument must be a number");
+      }
+      return Buffer2(size);
+    };
+    SafeBuffer.allocUnsafeSlow = function(size) {
+      if (typeof size !== "number") {
+        throw new TypeError("Argument must be a number");
+      }
+      return buffer.SlowBuffer(size);
+    };
+  }
+});
+
+// node_modules/compression/node_modules/bytes/index.js
+var require_bytes2 = __commonJS({
+  "node_modules/compression/node_modules/bytes/index.js"(exports2, module2) {
+    "use strict";
+    module2.exports = bytes;
+    module2.exports.format = format;
+    module2.exports.parse = parse;
+    var formatThousandsRegExp = /\B(?=(\d{3})+(?!\d))/g;
+    var formatDecimalsRegExp = /(?:\.0*|(\.[^0]+)0+)$/;
+    var map = {
+      b: 1,
+      kb: 1 << 10,
+      mb: 1 << 20,
+      gb: 1 << 30,
+      tb: (1 << 30) * 1024
+    };
+    var parseRegExp = /^((-|\+)?(\d+(?:\.\d+)?)) *(kb|mb|gb|tb)$/i;
+    function bytes(value, options) {
+      if (typeof value === "string") {
+        return parse(value);
+      }
+      if (typeof value === "number") {
+        return format(value, options);
+      }
+      return null;
+    }
+    function format(value, options) {
+      if (!Number.isFinite(value)) {
+        return null;
+      }
+      var mag = Math.abs(value);
+      var thousandsSeparator = options && options.thousandsSeparator || "";
+      var unitSeparator = options && options.unitSeparator || "";
+      var decimalPlaces = options && options.decimalPlaces !== void 0 ? options.decimalPlaces : 2;
+      var fixedDecimals = Boolean(options && options.fixedDecimals);
+      var unit = options && options.unit || "";
+      if (!unit || !map[unit.toLowerCase()]) {
+        if (mag >= map.tb) {
+          unit = "TB";
+        } else if (mag >= map.gb) {
+          unit = "GB";
+        } else if (mag >= map.mb) {
+          unit = "MB";
+        } else if (mag >= map.kb) {
+          unit = "KB";
+        } else {
+          unit = "B";
+        }
+      }
+      var val = value / map[unit.toLowerCase()];
+      var str = val.toFixed(decimalPlaces);
+      if (!fixedDecimals) {
+        str = str.replace(formatDecimalsRegExp, "$1");
+      }
+      if (thousandsSeparator) {
+        str = str.replace(formatThousandsRegExp, thousandsSeparator);
+      }
+      return str + unitSeparator + unit;
+    }
+    function parse(val) {
+      if (typeof val === "number" && !isNaN(val)) {
+        return val;
+      }
+      if (typeof val !== "string") {
+        return null;
+      }
+      var results = parseRegExp.exec(val);
+      var floatValue;
+      var unit = "b";
+      if (!results) {
+        floatValue = parseInt(val, 10);
+        unit = "b";
+      } else {
+        floatValue = parseFloat(results[1]);
+        unit = results[4].toLowerCase();
+      }
+      return Math.floor(map[unit] * floatValue);
+    }
+  }
+});
+
+// node_modules/compressible/index.js
+var require_compressible = __commonJS({
+  "node_modules/compressible/index.js"(exports2, module2) {
+    "use strict";
+    var db = require_mime_db();
+    var COMPRESSIBLE_TYPE_REGEXP = /^text\/|\+(?:json|text|xml)$/i;
+    var EXTRACT_TYPE_REGEXP = /^\s*([^;\s]*)(?:;|\s|$)/;
+    module2.exports = compressible;
+    function compressible(type) {
+      if (!type || typeof type !== "string") {
+        return false;
+      }
+      var match = EXTRACT_TYPE_REGEXP.exec(type);
+      var mime = match && match[1].toLowerCase();
+      var data = db[mime];
+      if (data && data.compressible !== void 0) {
+        return data.compressible;
+      }
+      return COMPRESSIBLE_TYPE_REGEXP.test(mime) || void 0;
+    }
+  }
+});
+
+// node_modules/on-headers/index.js
+var require_on_headers = __commonJS({
+  "node_modules/on-headers/index.js"(exports2, module2) {
+    "use strict";
+    module2.exports = onHeaders;
+    function createWriteHead(prevWriteHead, listener) {
+      var fired = false;
+      return function writeHead(statusCode) {
+        var args = setWriteHeadHeaders.apply(this, arguments);
+        if (!fired) {
+          fired = true;
+          listener.call(this);
+          if (typeof args[0] === "number" && this.statusCode !== args[0]) {
+            args[0] = this.statusCode;
+            args.length = 1;
+          }
+        }
+        return prevWriteHead.apply(this, args);
+      };
+    }
+    function onHeaders(res, listener) {
+      if (!res) {
+        throw new TypeError("argument res is required");
+      }
+      if (typeof listener !== "function") {
+        throw new TypeError("argument listener must be a function");
+      }
+      res.writeHead = createWriteHead(res.writeHead, listener);
+    }
+    function setHeadersFromArray(res, headers) {
+      for (var i = 0; i < headers.length; i++) {
+        res.setHeader(headers[i][0], headers[i][1]);
+      }
+    }
+    function setHeadersFromObject(res, headers) {
+      var keys = Object.keys(headers);
+      for (var i = 0; i < keys.length; i++) {
+        var k = keys[i];
+        if (k)
+          res.setHeader(k, headers[k]);
+      }
+    }
+    function setWriteHeadHeaders(statusCode) {
+      var length = arguments.length;
+      var headerIndex = length > 1 && typeof arguments[1] === "string" ? 2 : 1;
+      var headers = length >= headerIndex + 1 ? arguments[headerIndex] : void 0;
+      this.statusCode = statusCode;
+      if (Array.isArray(headers)) {
+        setHeadersFromArray(this, headers);
+      } else if (headers) {
+        setHeadersFromObject(this, headers);
+      }
+      var args = new Array(Math.min(length, headerIndex));
+      for (var i = 0; i < args.length; i++) {
+        args[i] = arguments[i];
+      }
+      return args;
+    }
+  }
+});
+
+// node_modules/compression/index.js
+var require_compression = __commonJS({
+  "node_modules/compression/index.js"(exports2, module2) {
+    "use strict";
+    var accepts = require_accepts();
+    var Buffer2 = require_safe_buffer2().Buffer;
+    var bytes = require_bytes2();
+    var compressible = require_compressible();
+    var debug = require_src()("compression");
+    var onHeaders = require_on_headers();
+    var vary = require_vary();
+    var zlib = require("zlib");
+    module2.exports = compression2;
+    module2.exports.filter = shouldCompress;
+    var cacheControlNoTransformRegExp = /(?:^|,)\s*?no-transform\s*?(?:,|$)/;
+    function compression2(options) {
+      var opts = options || {};
+      var filter = opts.filter || shouldCompress;
+      var threshold = bytes.parse(opts.threshold);
+      if (threshold == null) {
+        threshold = 1024;
+      }
+      return function compression3(req, res, next) {
+        var ended = false;
+        var length;
+        var listeners = [];
+        var stream;
+        var _end = res.end;
+        var _on = res.on;
+        var _write = res.write;
+        res.flush = function flush() {
+          if (stream) {
+            stream.flush();
+          }
+        };
+        res.write = function write(chunk, encoding) {
+          if (ended) {
+            return false;
+          }
+          if (!this._header) {
+            this._implicitHeader();
+          }
+          return stream ? stream.write(toBuffer(chunk, encoding)) : _write.call(this, chunk, encoding);
+        };
+        res.end = function end(chunk, encoding) {
+          if (ended) {
+            return false;
+          }
+          if (!this._header) {
+            if (!this.getHeader("Content-Length")) {
+              length = chunkLength(chunk, encoding);
+            }
+            this._implicitHeader();
+          }
+          if (!stream) {
+            return _end.call(this, chunk, encoding);
+          }
+          ended = true;
+          return chunk ? stream.end(toBuffer(chunk, encoding)) : stream.end();
+        };
+        res.on = function on(type, listener) {
+          if (!listeners || type !== "drain") {
+            return _on.call(this, type, listener);
+          }
+          if (stream) {
+            return stream.on(type, listener);
+          }
+          listeners.push([type, listener]);
+          return this;
+        };
+        function nocompress(msg) {
+          debug("no compression: %s", msg);
+          addListeners(res, _on, listeners);
+          listeners = null;
+        }
+        onHeaders(res, function onResponseHeaders() {
+          if (!filter(req, res)) {
+            nocompress("filtered");
+            return;
+          }
+          if (!shouldTransform(req, res)) {
+            nocompress("no transform");
+            return;
+          }
+          vary(res, "Accept-Encoding");
+          if (Number(res.getHeader("Content-Length")) < threshold || length < threshold) {
+            nocompress("size below threshold");
+            return;
+          }
+          var encoding = res.getHeader("Content-Encoding") || "identity";
+          if (encoding !== "identity") {
+            nocompress("already encoded");
+            return;
+          }
+          if (req.method === "HEAD") {
+            nocompress("HEAD request");
+            return;
+          }
+          var accept = accepts(req);
+          var method = accept.encoding(["gzip", "deflate", "identity"]);
+          if (method === "deflate" && accept.encoding(["gzip"])) {
+            method = accept.encoding(["gzip", "identity"]);
+          }
+          if (!method || method === "identity") {
+            nocompress("not acceptable");
+            return;
+          }
+          debug("%s compression", method);
+          stream = method === "gzip" ? zlib.createGzip(opts) : zlib.createDeflate(opts);
+          addListeners(stream, stream.on, listeners);
+          res.setHeader("Content-Encoding", method);
+          res.removeHeader("Content-Length");
+          stream.on("data", function onStreamData(chunk) {
+            if (_write.call(res, chunk) === false) {
+              stream.pause();
+            }
+          });
+          stream.on("end", function onStreamEnd() {
+            _end.call(res);
+          });
+          _on.call(res, "drain", function onResponseDrain() {
+            stream.resume();
+          });
+        });
+        next();
+      };
+    }
+    function addListeners(stream, on, listeners) {
+      for (var i = 0; i < listeners.length; i++) {
+        on.apply(stream, listeners[i]);
+      }
+    }
+    function chunkLength(chunk, encoding) {
+      if (!chunk) {
+        return 0;
+      }
+      return !Buffer2.isBuffer(chunk) ? Buffer2.byteLength(chunk, encoding) : chunk.length;
+    }
+    function shouldCompress(req, res) {
+      var type = res.getHeader("Content-Type");
+      if (type === void 0 || !compressible(type)) {
+        debug("%s not compressible", type);
+        return false;
+      }
+      return true;
+    }
+    function shouldTransform(req, res) {
+      var cacheControl = res.getHeader("Cache-Control");
+      return !cacheControl || !cacheControlNoTransformRegExp.test(cacheControl);
+    }
+    function toBuffer(chunk, encoding) {
+      return !Buffer2.isBuffer(chunk) ? Buffer2.from(chunk, encoding) : chunk;
+    }
+  }
+});
+
 // node_modules/object-assign/index.js
 var require_object_assign = __commonJS({
   "node_modules/object-assign/index.js"(exports2, module2) {
@@ -27006,7 +27384,7 @@ var require_utils4 = __commonJS({
     exports2.parsePackageVersion = exports2.supportsRetryableWrites = exports2.enumToString = exports2.emitWarningOnce = exports2.emitWarning = exports2.MONGODB_WARNING_CODE = exports2.DEFAULT_PK_FACTORY = exports2.HostAddress = exports2.BufferPool = exports2.deepCopy = exports2.isRecord = exports2.setDifference = exports2.isHello = exports2.isSuperset = exports2.resolveOptions = exports2.hasAtomicOperators = exports2.makeInterruptibleAsyncInterval = exports2.calculateDurationInMs = exports2.now = exports2.makeClientMetadata = exports2.makeStateMachine = exports2.errorStrictEqual = exports2.arrayStrictEqual = exports2.eachAsyncSeries = exports2.eachAsync = exports2.collationNotSupported = exports2.maxWireVersion = exports2.uuidV4 = exports2.databaseNamespace = exports2.maybePromise = exports2.makeCounter = exports2.MongoDBNamespace = exports2.ns = exports2.deprecateOptions = exports2.defaultMsgHandler = exports2.getTopology = exports2.decorateWithExplain = exports2.decorateWithReadConcern = exports2.decorateWithCollation = exports2.isPromiseLike = exports2.applyWriteConcern = exports2.applyRetryableWrites = exports2.executeLegacyOperation = exports2.filterOptions = exports2.mergeOptions = exports2.isObject = exports2.parseIndexOptions = exports2.normalizeHintField = exports2.checkCollectionName = exports2.MAX_JS_INT = void 0;
     exports2.commandSupportsReadConcern = exports2.shuffle = void 0;
     var crypto = require("crypto");
-    var os = require("os");
+    var os2 = require("os");
     var url_1 = require("url");
     var bson_1 = require_bson2();
     var constants_1 = require_constants2();
@@ -27477,12 +27855,12 @@ var require_utils4 = __commonJS({
           version: NODE_DRIVER_VERSION
         },
         os: {
-          type: os.type(),
+          type: os2.type(),
           name: process.platform,
           architecture: process.arch,
-          version: os.release()
+          version: os2.release()
         },
-        platform: `Node.js ${process.version}, ${os.endianness()} (unified)`
+        platform: `Node.js ${process.version}, ${os2.endianness()} (unified)`
       };
       if (options.driverInfo) {
         if (options.driverInfo.name) {
@@ -37366,7 +37744,7 @@ var require_deps = __commonJS({
 });
 
 // node_modules/mongodb/lib/cmap/wire_protocol/compression.js
-var require_compression = __commonJS({
+var require_compression2 = __commonJS({
   "node_modules/mongodb/lib/cmap/wire_protocol/compression.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -37551,7 +37929,7 @@ var require_connection_string = __commonJS({
     var url_1 = require("url");
     var mongo_credentials_1 = require_mongo_credentials();
     var providers_1 = require_providers();
-    var compression_1 = require_compression();
+    var compression_1 = require_compression2();
     var encrypter_1 = require_encrypter();
     var error_1 = require_error();
     var logger_1 = require_logger();
@@ -39300,7 +39678,7 @@ var require_message_stream = __commonJS({
     var error_1 = require_error();
     var utils_1 = require_utils4();
     var commands_1 = require_commands();
-    var compression_1 = require_compression();
+    var compression_1 = require_compression2();
     var constants_1 = require_constants2();
     var MESSAGE_HEADER_SIZE = 16;
     var COMPRESSION_DETAILS_SIZE = 9;
@@ -39963,7 +40341,7 @@ var require_ip = __commonJS({
     "use strict";
     var ip = exports2;
     var Buffer2 = require("buffer").Buffer;
-    var os = require("os");
+    var os2 = require("os");
     ip.toBuffer = function(ip2, buff, offset) {
       offset = ~~offset;
       var result;
@@ -40212,7 +40590,7 @@ var require_ip = __commonJS({
       return family === "ipv4" ? "127.0.0.1" : "fe80::1";
     };
     ip.address = function(name, family) {
-      var interfaces = os.networkInterfaces();
+      var interfaces = os2.networkInterfaces();
       var all;
       family = _normalizeFamily(family);
       if (name && name !== "private" && name !== "public") {
@@ -47582,7 +47960,7 @@ var require_lib6 = __commonJS({
     Object.defineProperty(exports2, "AuthMechanism", { enumerable: true, get: function() {
       return providers_1.AuthMechanism;
     } });
-    var compression_1 = require_compression();
+    var compression_1 = require_compression2();
     Object.defineProperty(exports2, "Compressor", { enumerable: true, get: function() {
       return compression_1.Compressor;
     } });
@@ -49167,7 +49545,7 @@ var require_has_flag = __commonJS({
 var require_supports_color = __commonJS({
   "../../../node_modules/supports-color/index.js"(exports2, module2) {
     "use strict";
-    var os = require("os");
+    var os2 = require("os");
     var hasFlag = require_has_flag();
     var env = process.env;
     var forceColor;
@@ -49205,7 +49583,7 @@ var require_supports_color = __commonJS({
       }
       const min = forceColor ? 1 : 0;
       if (process.platform === "win32") {
-        const osRelease = os.release().split(".");
+        const osRelease = os2.release().split(".");
         if (Number(process.versions.node.split(".")[0]) >= 8 && Number(osRelease[0]) >= 10 && Number(osRelease[2]) >= 10586) {
           return Number(osRelease[2]) >= 14931 ? 3 : 2;
         }
@@ -75425,7 +75803,7 @@ var require_main = __commonJS({
   "node_modules/dotenv/lib/main.js"(exports2, module2) {
     var fs2 = require("fs");
     var path = require("path");
-    var os = require("os");
+    var os2 = require("os");
     var LINE = /(?:^|^)\s*(?:export\s+)?([\w.-]+)(?:\s*=\s*?|:\s+?)(\s*'(?:\\'|[^'])*'|\s*"(?:\\"|[^"])*"|\s*`(?:\\`|[^`])*`|[^#\r\n]+)?\s*(?:#.*)?(?:$|$)/mg;
     function parse(src) {
       const obj = {};
@@ -75450,7 +75828,7 @@ var require_main = __commonJS({
       console.log(`[dotenv][DEBUG] ${message}`);
     }
     function _resolveHome(envPath) {
-      return envPath[0] === "~" ? path.join(os.homedir(), envPath.slice(1)) : envPath;
+      return envPath[0] === "~" ? path.join(os2.homedir(), envPath.slice(1)) : envPath;
     }
     function config2(options) {
       let dotenvPath = path.resolve(process.cwd(), ".env");
@@ -90468,22 +90846,22 @@ var require_axios = __commonJS({
       };
       return instance;
     }
-    var axios3 = createInstance(defaults);
-    axios3.Axios = Axios;
-    axios3.CanceledError = require_CanceledError();
-    axios3.CancelToken = require_CancelToken();
-    axios3.isCancel = require_isCancel();
-    axios3.VERSION = require_data().version;
-    axios3.toFormData = require_toFormData();
-    axios3.AxiosError = require_AxiosError();
-    axios3.Cancel = axios3.CanceledError;
-    axios3.all = function all(promises) {
+    var axios2 = createInstance(defaults);
+    axios2.Axios = Axios;
+    axios2.CanceledError = require_CanceledError();
+    axios2.CancelToken = require_CancelToken();
+    axios2.isCancel = require_isCancel();
+    axios2.VERSION = require_data().version;
+    axios2.toFormData = require_toFormData();
+    axios2.AxiosError = require_AxiosError();
+    axios2.Cancel = axios2.CanceledError;
+    axios2.all = function all(promises) {
       return Promise.all(promises);
     };
-    axios3.spread = require_spread();
-    axios3.isAxiosError = require_isAxiosError();
-    module2.exports = axios3;
-    module2.exports.default = axios3;
+    axios2.spread = require_spread();
+    axios2.isAxiosError = require_isAxiosError();
+    module2.exports = axios2;
+    module2.exports.default = axios2;
   }
 });
 
@@ -90495,8 +90873,10 @@ var require_axios2 = __commonJS({
 });
 
 // functions/api.js
+var import_os = __toModule(require("os"));
 var import_express5 = __toModule(require_express2());
 var import_body_parser = __toModule(require_body_parser());
+var import_compression = __toModule(require_compression());
 var import_cors = __toModule(require_lib3());
 var import_serverless_http = __toModule(require_serverless_http());
 
@@ -90562,7 +90942,7 @@ auth.get("/register", async (req, res) => {
   const { username, password } = req.query;
   try {
     const user2 = await User.create({ username, password });
-    return res.status(200).json({ "msg": "Register success" });
+    return res.status(200).json({ "msg": "Register success", "user": { username, password } });
   } catch (err) {
     switch (err["code"]) {
       case 11e3:
@@ -90631,7 +91011,6 @@ var import_express3 = __toModule(require_express2());
 var import_ytdl_core = __toModule(require_lib10());
 var import_fs = __toModule(require("fs"));
 var import_yt_search = __toModule(require_yt_search());
-var import_axios = __toModule(require_axios2());
 var media = import_express3.default.Router();
 media.get("/", async (req, res) => {
   res.status(200).json("You can use API to get data from youtube");
@@ -90681,7 +91060,7 @@ media.get("/tracklist", async (req, res) => {
 });
 media.get("/stream", async (req, res) => {
   let { id, type } = req.query;
-  console.log(`Get media stream url: ${id}, type: ${type}`);
+  console.log(`Get media stream src :: video ID: ${id}, type: ${type}`);
   try {
     if (type === "audio") {
       let { formats } = await import_ytdl_core.default.getInfo(id);
@@ -90698,7 +91077,7 @@ media.get("/stream", async (req, res) => {
 });
 
 // routes/film.js
-var import_axios2 = __toModule(require_axios2());
+var import_axios = __toModule(require_axios2());
 var import_express4 = __toModule(require_express2());
 var film = import_express4.default.Router();
 var config = {
@@ -90713,7 +91092,7 @@ var config = {
 film.get("/homepage", async (req, res) => {
   let page = req.query.page ? req.query.page : 0;
   try {
-    let result = await import_axios2.default.get(`https://ga-mobile-api.loklok.tv/cms/app/homePage/getHome?page=${page}`, { headers: config.headers });
+    let result = await import_axios.default.get(`https://ga-mobile-api.loklok.tv/cms/app/homePage/getHome?page=${page}`, { headers: config.headers });
     res.status(200).json(result.data);
   } catch (err) {
     res.status(500).json(err);
@@ -90723,7 +91102,7 @@ film.get("/detail", async (req, res) => {
   let { id, category } = req.query;
   if (category == 0) {
     try {
-      let result = await import_axios2.default.get(`https://ga-mobile-api.loklok.tv/cms/app/movieDrama/get?id=${id}&category=0`, { headers: config.headers });
+      let result = await import_axios.default.get(`https://ga-mobile-api.loklok.tv/cms/app/movieDrama/get?id=${id}&category=0`, { headers: config.headers });
       res.status(200).json(result.data);
     } catch (err) {
       res.status(500).json(err);
@@ -90731,7 +91110,7 @@ film.get("/detail", async (req, res) => {
   }
   if (category == 1) {
     try {
-      let result = await import_axios2.default.get(`https://ga-mobile-api.loklok.tv/cms/app/movieDrama/get?id=${id}&category=1`, { headers: config.headers });
+      let result = await import_axios.default.get(`https://ga-mobile-api.loklok.tv/cms/app/movieDrama/get?id=${id}&category=1`, { headers: config.headers });
       res.status(200).json(result.data);
     } catch (err) {
       res.status(500).json(err);
@@ -90745,6 +91124,10 @@ var main = import_express5.default.Router();
 app.use(import_body_parser.default.urlencoded({ extended: false }));
 app.use(import_body_parser.default.json());
 app.use((0, import_cors.default)());
+app.use((0, import_compression.default)({
+  level: 6
+}));
+console.log(`CPU THREADPOOL :: `, import_os.default.cpus().length);
 main.get("/", (req, res) => {
   res.json({ message: "Hello World!" });
 });
@@ -91875,6 +92258,21 @@ object-assign
  * @api private
  */
 /*!
+ * compressible
+ * Copyright(c) 2013 Jonathan Ong
+ * Copyright(c) 2014 Jeremiah Senkpiel
+ * Copyright(c) 2015 Douglas Christopher Wilson
+ * MIT Licensed
+ */
+/*!
+ * compression
+ * Copyright(c) 2010 Sencha Inc.
+ * Copyright(c) 2011 TJ Holowaychuk
+ * Copyright(c) 2014 Jonathan Ong
+ * Copyright(c) 2014-2015 Douglas Christopher Wilson
+ * MIT Licensed
+ */
+/*!
  * content-disposition
  * Copyright(c) 2014-2017 Douglas Christopher Wilson
  * MIT Licensed
@@ -92055,6 +92453,11 @@ object-assign
 /*!
  * on-finished
  * Copyright(c) 2013 Jonathan Ong
+ * Copyright(c) 2014 Douglas Christopher Wilson
+ * MIT Licensed
+ */
+/*!
+ * on-headers
  * Copyright(c) 2014 Douglas Christopher Wilson
  * MIT Licensed
  */

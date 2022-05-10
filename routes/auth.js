@@ -10,7 +10,7 @@ auth.get('/register', async (req, res) => {
 
     try {
         const user = await User.create({ username, password })
-        return res.status(200).json({ 'msg': 'Register success' })
+        return res.status(200).json({ 'msg': 'Register success', 'user': {username, password} })
     } catch (err) {
         switch (err["code"]) {
             case 11000:
